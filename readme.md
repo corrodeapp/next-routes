@@ -131,6 +131,7 @@ The generated file:
 ```typescript
 /**
  * Auto-generated Route Paths By @corrodekit/next-routes
+ * Docs: https://github.com/corrodeapp/next-routes
  *
  * ──────────────────────────────────────────────────────────
  * ⚠️  DO NOT MANUALLY EDIT THIS FILE — IT IS AUTO-GENERATED
