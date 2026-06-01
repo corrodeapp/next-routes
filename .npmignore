@@ -1,0 +1,29 @@
+# Source files (consumers get dist/ only)
+src/
+tsconfig.json
+tsup.config.ts
+
+# Dev tooling
+.git/
+.gitignore
+.github/
+.vscode/
+
+# Agent dirs
+.agent/
+.gemini/
+.claude/
+.cursor/
+
+# Test artifacts
+coverage/
+*.test.ts
+tests/
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Original monolithic script (preserved in git, not shipped)
+script.ts
