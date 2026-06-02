@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { shouldIgnoreFolder, generateKey } from "./helpers.js";
+import { isSymbolicLink } from "./security.js";
 
 // ─── App Router Traversal ─────────────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ export function traverseAppDir(
 
     const folderName = item.name;
     if (shouldIgnoreFolder(folderName, extraIgnore)) continue;
+    if (isSymbolicLink(item)) continue;
 
     // Route group — transparent in URL, pass through without adding to segment
     const isRouteGroup =
@@ -107,6 +109,7 @@ export function traversePagesDir(
 
     if (item.isDirectory()) {
       if (shouldIgnoreFolder(name, extraIgnore)) continue;
+      if (isSymbolicLink(item)) continue;
 
       const nextSegment =
         routeSegment === "" ? `/${name}` : `${routeSegment}/${name}`;

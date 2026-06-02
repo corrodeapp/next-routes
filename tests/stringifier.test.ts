@@ -106,4 +106,20 @@ describe("stringifyRoutes", () => {
     expect(result).toContain("VALID_KEY:");
     expect(result).not.toContain('"VALID_KEY"');
   });
+
+  it("safely escapes double quotes to prevent string injection", () => {
+    const result = stringifyRoutes('"/path/" + process.exit(1) + "');
+    expect(result).toBe('"\\"/path/\\" + process.exit(1) + \\""');
+  });
+
+  it("safely escapes backticks and template expressions in dynamic routes to prevent RCE", () => {
+    const node: DynamicNode = {
+      __isDynamic: true,
+      path: "/[id]` + process.exit(1) + `${hacked}",
+      params: [{ name: "id", isCatchAll: false }],
+    };
+
+    const result = stringifyRoutes(node);
+    expect(result).toBe("(params: { id: string | number }) => `/${params.id}\\` + process.exit(1) + \\`\\${hacked}` as Route");
+  });
 });

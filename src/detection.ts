@@ -2,6 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import type { RouteGenConfig, ResolvedConfig } from "./types.js";
 
+import {
+  sanitizeConfigJson,
+  assertPathWithinProject,
+  validateBasePath,
+} from "./security.js";
+
 // ─── Directory Detection ──────────────────────────────────────────────────────
 
 interface DetectedStructure {
@@ -55,7 +61,13 @@ function detectBasePath(cwd: string): string {
     try {
       const content = fs.readFileSync(configPath, "utf-8");
       const match = content.match(/basePath\s*:\s*["']([^"']+)["']/);
-      if (match?.[1]) return match[1];
+      if (match?.[1]) {
+        const validated = validateBasePath(match[1]);
+        if (validated) return validated;
+        console.warn(
+          `⚠️  Ignoring invalid basePath "${match[1]}" found in ${configFile}`,
+        );
+      }
     } catch {
       // Silently skip unreadable config files
     }
@@ -80,7 +92,9 @@ export function loadConfig(userConfig: RouteGenConfig = {}): RouteGenConfig {
   if (fs.existsSync(configPath)) {
     try {
       const fileContent = fs.readFileSync(configPath, "utf-8");
-      fileConfig = JSON.parse(fileContent) as RouteGenConfig;
+      fileConfig = sanitizeConfigJson(
+        JSON.parse(fileContent),
+      ) as RouteGenConfig;
     } catch (error) {
       console.warn(
         "⚠️  Failed to parse routes.config.json:",
@@ -105,17 +119,28 @@ export function resolveConfig(userConfig: RouteGenConfig = {}): ResolvedConfig {
   const detected = detectNextJsStructure();
   const merged = loadConfig(userConfig);
 
+  const appDir = merged.appDir
+    ? path.resolve(process.cwd(), merged.appDir)
+    : detected.appDir;
+
+  const pagesDir = merged.pagesDir
+    ? path.resolve(process.cwd(), merged.pagesDir)
+    : detected.pagesDir;
+
+  const outputPath = merged.outputPath
+    ? path.resolve(process.cwd(), merged.outputPath)
+    : resolveOutputPath(detected);
+
+  // ── Security boundary checks ──────────────────────────────────────────
+  if (appDir) assertPathWithinProject(appDir, "appDir");
+  if (pagesDir) assertPathWithinProject(pagesDir, "pagesDir");
+  assertPathWithinProject(outputPath, "outputPath");
+
   return {
-    appDir: merged.appDir
-      ? path.resolve(process.cwd(), merged.appDir)
-      : detected.appDir,
-    pagesDir: merged.pagesDir
-      ? path.resolve(process.cwd(), merged.pagesDir)
-      : detected.pagesDir,
+    appDir,
+    pagesDir,
     basePath: merged.basePath ?? detected.basePath,
-    outputPath: merged.outputPath
-      ? path.resolve(process.cwd(), merged.outputPath)
-      : resolveOutputPath(detected),
+    outputPath,
     ignore: merged.ignore ?? [],
     routerType: merged.routerType ?? "auto",
   };

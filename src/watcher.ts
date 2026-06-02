@@ -58,9 +58,9 @@ export function startRouteWatcher(config: RouteGenConfig = {}): void {
     persistent: true,
     ignoreInitial: true,
     ignored: [
-      /(^|[/\\])\./,            // dotfiles
-      "**/node_modules/**",     // dependencies
-      `**/${outputFilename}`,   // the generated file itself
+      /(^|[/\\])\./, // dotfiles
+      "**/node_modules/**", // dependencies
+      `**/${outputFilename}`, // the generated file itself
     ],
   });
 

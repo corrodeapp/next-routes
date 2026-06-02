@@ -72,10 +72,15 @@ function createNodeValue(pathValue: string): RouteNode {
   const dynamicMatches = [...pathValue.matchAll(/\[([^\]]+)\]/g)];
 
   if (dynamicMatches.length > 0) {
-    const params = dynamicMatches.map((m) => ({
-      name: m[1]!.replace(/^\.\.\./, ""),
-      isCatchAll: m[1]!.startsWith("..."),
-    }));
+    const params = dynamicMatches.map((m) => {
+      const raw = m[1]!.replace(/^\.\.\./, "");
+      let name = raw.replace(/[^a-zA-Z0-9_]/g, "");
+      if (!/^[a-zA-Z_$]/.test(name)) name = "_" + name;
+      return {
+        name,
+        isCatchAll: m[1]!.startsWith("..."),
+      };
+    });
     return { __isDynamic: true, path: pathValue, params };
   }
 

@@ -115,4 +115,16 @@ describe("buildNestedRoutes", () => {
       CONTACT: "/contact",
     });
   });
+
+  it("sanitizes dynamic parameter names to prevent injection", () => {
+    const result = buildNestedRoutes({
+      "HACK.ID": "/hack/[id_any = console.log('HACKED_PARAM')]",
+    });
+
+    const hack = (result as Record<string, unknown>).HACK as Record<string, unknown>;
+    const idNode = hack.ID as Record<string, unknown>;
+
+    expect(idNode.__isDynamic).toBe(true);
+    expect(idNode.params).toEqual([{ name: "id_anyconsolelogHACKED_PARAM", isCatchAll: false }]);
+  });
 });

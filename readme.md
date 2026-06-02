@@ -30,6 +30,7 @@ If you ever rename a folder, move a page, or restructure your app — **nothing 
 - **Change-Detection Writes** — Only writes when routes actually change, preventing infinite dev server loops
 - **Route Groups & Interceptors** — Correctly handles `(group)` transparency and skips `(.)` interceptors
 - **Cross-Platform Watching** — Uses [chokidar](https://github.com/paulmillr/chokidar) for reliable file watching on Windows, macOS, and Linux
+- **Security Hardened** — Path boundary enforcement, prototype pollution protection, symlink-safe traversal, and bundler-proof output serialization
 
 ---
 
@@ -224,6 +225,7 @@ Options:
 ├── src/
 │   ├── types.ts          # Shared interfaces, type guards, and config schemas
 │   ├── helpers.ts        # Utility functions (debounce, key generation, ignore logic)
+│   ├── security.ts       # Security utilities (path boundaries, sanitization, symlinks)
 │   ├── detection.ts      # Auto-detection of app/pages dirs, basePath, config loading
 │   ├── traversal.ts      # Pure directory scanners (App Router + Pages Router)
 │   ├── builder.ts        # Nested tree builder (flat record → hierarchy)
@@ -236,7 +238,8 @@ Options:
 │   ├── helpers.test.ts
 │   ├── builder.test.ts
 │   ├── stringifier.test.ts
-│   └── traversal.test.ts
+│   ├── traversal.test.ts
+│   └── security.test.ts
 ├── package.json
 ├── tsconfig.json
 ├── tsup.config.ts
@@ -276,6 +279,8 @@ graph LR
     Core --> Builder[builder.ts]
     Core --> Stringifier[stringifier.ts]
     Traversal --> Helpers[helpers.ts]
+    Traversal --> Security[security.ts]
+    Detection --> Security
     Detection --> Types[types.ts]
     Index[index.ts] --> Core
     Index --> Watcher
