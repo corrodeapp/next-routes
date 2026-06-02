@@ -1,6 +1,6 @@
 {
   "name": "@corrodekit/next-routes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Auto-generate type-safe route manifests for Next.js. Eliminate ghost strings.",
   "type": "module",
   "main": "./dist/index.cjs",

@@ -42,7 +42,7 @@ describe("stringifyRoutes", () => {
 
     const result = stringifyRoutes(node);
     expect(result).toContain("(params: { id: string | number })");
-    expect(result).toContain("${params.id}");
+    expect(result).toBe("(params: { id: string | number }) => `/tracks/${params.id}` as Route");
   });
 
   it("stringifies a catch-all route with string[] param type", () => {
@@ -54,7 +54,7 @@ describe("stringifyRoutes", () => {
 
     const result = stringifyRoutes(node);
     expect(result).toContain("slug: string[]");
-    expect(result).toContain("params.slug.join('/')");
+    expect(result).toBe("(params: { slug: string[] }) => `/docs/${params.slug.join('/')}` as Route");
   });
 
   it("stringifies a route with multiple dynamic params", () => {
@@ -70,8 +70,7 @@ describe("stringifyRoutes", () => {
     const result = stringifyRoutes(node);
     expect(result).toContain("orgId: string | number");
     expect(result).toContain("teamId: string | number");
-    expect(result).toContain("${params.orgId}");
-    expect(result).toContain("${params.teamId}");
+    expect(result).toBe("(params: { orgId: string | number; teamId: string | number }) => `/org/${params.orgId}/team/${params.teamId}` as Route");
   });
 
   it("produces valid indentation for nested structures", () => {

@@ -18,6 +18,8 @@ const FILE_HEADER = `/**
  *
  */
 
+import type { Route } from "next";
+
 `;
 
 // ─── Core Generator ───────────────────────────────────────────────────────────

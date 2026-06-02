@@ -58,7 +58,7 @@ function stringifyDynamicNode(node: {
     },
   );
 
-  return `(params: { ${paramsType} }) => \`${pathTemplate}\``;
+  return `(params: { ${paramsType} }) => \`${pathTemplate}\` as Route`;
 }
 
 /** Checks if a string is a valid JS identifier (safe to use without quotes). */
